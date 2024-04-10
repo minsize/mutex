@@ -56,4 +56,4 @@ const Mutex: Mutex = ({ globalLimit = 1 } = {}) => {
   return { wait, release }
 }
 
-export default Mutex
+export { Mutex }

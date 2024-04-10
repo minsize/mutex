@@ -1,4 +1,4 @@
-## SDK
+## Mutex
 [![npm version](https://img.shields.io/npm/v/@minsize/mutex)](https://www.npmjs.com/package/@minsize/mutex)
 
 ```

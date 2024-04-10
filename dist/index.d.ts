@@ -13,4 +13,4 @@ type Mutex = (params?: {
 };
 declare const Mutex: Mutex;
 
-export { Mutex as default };
+export { Mutex };
