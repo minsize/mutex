@@ -1,0 +1,21 @@
+{
+  "name": "@minsize/mutex",
+  "version": "0.0.1",
+  "description": "Mutex for guarding async workflows",
+  "license": "MIT",
+  "types": "index.ts",
+  "author": {
+    "name": "Egor Kytyukov",
+    "url": "https://vk.com/xuserz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/minsize/mutex"
+  },
+  "contributors": [],
+  "keywords": [
+    "mutex",
+    "async mutex",
+    "async"
+  ]
+}

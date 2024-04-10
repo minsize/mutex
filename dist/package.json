@@ -1,0 +1,23 @@
+{
+  "name": "@minsize/mutex",
+  "version": "0.0.1",
+  "description": "Mutex for guarding async workflows",
+  "license": "MIT",
+  "types": "index.ts",
+  "author": {
+    "name": "Egor Kytyukov",
+    "url": "https://vk.com/xuserz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/APITEAMRU/twa-bridge"
+  },
+  "contributors": [],
+  "keywords": [
+    "twa-sdk",
+    "telegram sdk",
+    "telegram",
+    "tg",
+    "telegram module"
+  ]
+}
