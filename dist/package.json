@@ -1,6 +1,6 @@
 {
   "name": "@minsize/mutex",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Mutex for guarding async workflows",
   "license": "MIT",
   "types": "index.ts",
@@ -10,14 +10,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/APITEAMRU/twa-bridge"
+    "url": "https://github.com/minsize/mutex"
   },
   "contributors": [],
   "keywords": [
-    "twa-sdk",
-    "telegram sdk",
-    "telegram",
-    "tg",
-    "telegram module"
+    "mutex",
+    "async mutex",
+    "async"
   ]
 }
