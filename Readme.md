@@ -35,7 +35,7 @@ const fn = async () => {
 import { Mutex } from '@minsize/mutex'
 
 const mutex = Mutex({
-    globalLimit
+    globalLimit: 1 // Global limit on how many functions a mutex can process at once
 })
 
 const fn = async (userId) => {

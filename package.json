@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "rollup --config config/rollup.config.ts --configPlugin @rollup/plugin-typescript",
+    "build": "rollup --config config/rollup.config.ts --configPlugin @rollup/plugin-typescript && npm run test",
     "test": "jest --config jest.config.ts"
   },
   "devDependencies": {

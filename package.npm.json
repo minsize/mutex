@@ -1,6 +1,6 @@
 {
   "name": "@minsize/mutex",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Mutex for guarding async workflows",
   "license": "MIT",
   "types": "index.ts",

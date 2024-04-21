@@ -1,16 +1,22 @@
 type Release = (params?: {
-    key?: string;
+    key: string;
 }) => void;
 type Wait = (params?: {
-    key?: string;
-    limit?: number;
+    key: string;
+    limit: number;
 }) => Promise<Release>;
-type Mutex = (params?: {
-    globalLimit?: number;
+type Reqs = Record<string, {
+    l: number;
+    w: {
+        r: Release;
+    }[];
+}>;
+type TMutex = (params?: {
+    globalLimit: number;
 }) => {
     wait: Wait;
     release: Release;
 };
-declare const Mutex: Mutex;
+declare const Mutex: TMutex;
 
-export { Mutex };
+export { Mutex, type Release, type Reqs, type TMutex, type Wait };
