@@ -25,3 +25,17 @@ test("test_2", async () => {
 
   expect(count === 2).toBe(true)
 })
+
+test("test_3", async () => {
+  const mutex = Mutex();
+
+  let count = 0;
+
+  const relase = await mutex.wait({ key: "id", limit: 1 })
+  count++
+  setTimeout(() => mutex.release({ key: "id" }), 2000)
+  const relase2 = await mutex.wait({ key: "id", limit: 1 })
+  count++
+
+  expect(count === 2).toBe(true)
+})
