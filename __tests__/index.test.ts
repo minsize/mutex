@@ -43,6 +43,39 @@ describe("Mutex", () => {
     release2()
   })
 
+  it("indexs", async () => {
+    const mutex = Mutex()
+    const order: number[] = []
+
+    await Promise.all([
+      new Promise(async (resolve) => {
+        const release = await mutex.wait({ key: "1", limit: 1, index: 0 })
+        order.push(1)
+        release()
+        resolve(true)
+      }),
+      new Promise(async (resolve) => {
+        const release = await mutex.wait({ key: "1", limit: 1, index: 1 })
+        order.push(3)
+        release()
+        resolve(true)
+      }),
+      new Promise(async (resolve) => {
+        const release = await mutex.wait({ key: "1", limit: 1, index: 1 })
+        order.push(4)
+        release()
+        resolve(true)
+      }),
+      new Promise(async (resolve) => {
+        const release = await mutex.wait({ key: "1", limit: 1, index: 0 })
+        order.push(2)
+        release()
+        resolve(true)
+      }),
+    ])
+    expect(order).toEqual([1, 2, 3, 4])
+  })
+
   it("should timeout waiting requests after the specified duration", async () => {
     const mutex = Mutex({ globalLimit: 1, timeout: 10 })
     let error

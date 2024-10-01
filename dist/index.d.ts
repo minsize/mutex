@@ -4,10 +4,16 @@ type Release = (options?: {
 type Wait = (options?: {
     key: string;
     limit: number;
+    index?: number;
 }) => Promise<Release>;
+/**
+ * l = limit
+ * r = requests
+ * i = index
+ */
 type List = {
     l: number;
-    r: Release[];
+    r: [Release, number][];
 };
 type MutexOptions = {
     /**

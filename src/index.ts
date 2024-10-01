@@ -1,7 +1,16 @@
 type Release = (options?: { key: string }) => void
-type Wait = (options?: { key: string; limit: number }) => Promise<Release>
+type Wait = (options?: {
+  key: string
+  limit: number
+  index?: number
+}) => Promise<Release>
 
-type List = { l: number; r: Release[] }
+/**
+ * l = limit
+ * r = requests
+ * i = index
+ */
+type List = { l: number; r: [Release, number][] }
 
 type MutexOptions = {
   /**
@@ -16,12 +25,16 @@ type MutexOptions = {
 
 type Mutex = (options?: MutexOptions) => { wait: Wait; release: Release }
 const Mutex: Mutex = (globalOptions) => {
-  const list = new Map<string, List>()
+  const list: Record<string, List | undefined> = {}
   let usedLimit = 0
 
   const wait: Wait = (options) => {
     return new Promise<Release>((resolve, reject) => {
-      const request = list.get(`${options?.key}`) || { l: 0, r: [] }
+      let request = list[`${options?.key}`]
+      if (!request) {
+        request = { l: 0, r: [] }
+        list[`${options?.key}`] = request
+      }
 
       const failed =
         (options?.limit && request.l >= options.limit) ||
@@ -42,29 +55,25 @@ const Mutex: Mutex = (globalOptions) => {
           release(options)
         })
 
-      if (failed) {
-        request.r.push(end)
-      }
+      if (failed) request.r.push([end, options?.index || 0])
 
       usedLimit++
       request.l++
 
-      list.set(`${options?.key}`, request)
-      if (!failed) {
-        end()
-      }
+      if (!failed) end()
     })
   }
 
   const release: Release = (options) => {
-    const request = list.get(`${options?.key}`)
+    const request = list[`${options?.key}`]
     if (request) {
-      if (request.r.length !== 0) request.r.shift()!(options)
+      if (request.r.length !== 0) {
+        request.r
+          .sort((a, b) => a[1] - b[1])
+          .shift()?.[0](options)
+      }
       request.l--
-
-      list.set(`${options?.key}`, request)
     }
-
     usedLimit--
   }
 
