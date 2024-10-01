@@ -1,75 +1,77 @@
-type Release = (params?: {
-  key: string
-}) => void
+type Release = (options?: { key: string }) => void
+type Wait = (options?: { key: string; limit: number }) => Promise<Release>
 
-type Wait = (params?: {
-  key: string
-  limit: number
-}) => Promise<Release>
+type List = { l: number; r: Release[] }
 
-type Reqs = Record<string, {
-  l: number
-  w: {
-    r: Release
-  }[]
-}>
-
-type TMutex = (params?: {
-  globalLimit: number
-}) => {
-  wait: Wait,
-  release: Release
+type MutexOptions = {
+  /**
+   * Total request limit
+   */
+  globalLimit?: number
+  /**
+   * Maximum waiting time for a response
+   */
+  timeout?: number
 }
 
-const Mutex: TMutex = (a = { globalLimit: 1 }) => {
+type Mutex = (options?: MutexOptions) => { wait: Wait; release: Release }
+const Mutex: Mutex = (globalOptions) => {
+  const list = new Map<string, List>()
+  let usedLimit = 0
 
-  const REQS: Reqs = {}
-  let GLOBAL_LIMIT = 0;
+  const wait: Wait = (options) => {
+    return new Promise<Release>((resolve, reject) => {
+      const request = list.get(`${options?.key}`) || { l: 0, r: [] }
 
-  /**
-   * Adding to the waiting list
-   */
-  const wait: Wait = async (p = { key: "", limit: 1 }) => {
+      const failed =
+        (options?.limit && request.l >= options.limit) ||
+        usedLimit >= (globalOptions?.globalLimit || 1)
 
-    return await new Promise<Release>((_resolve) => {
-      const r = () => _resolve(() => release(p))
-      const list = REQS[p.key] || (REQS[p.key] = { l: 0, w: [] })
-      if (GLOBAL_LIMIT >= a.globalLimit || list.l >= p.limit) {
-        list.w.push({ r })
-      } else {
-        GLOBAL_LIMIT++
-        list.l++;
-        r()
+      const timer =
+        failed && globalOptions?.timeout
+          ? setTimeout(() => {
+              const error: Error & { code?: number } = new Error("timeout")
+              error.code = 1
+              reject(error)
+            }, globalOptions.timeout)
+          : undefined
+
+      const end = () =>
+        resolve(() => {
+          clearTimeout(timer)
+          release(options)
+        })
+
+      if (failed) {
+        request.r.push(end)
+      }
+
+      usedLimit++
+      request.l++
+
+      list.set(`${options?.key}`, request)
+      if (!failed) {
+        end()
       }
     })
-
   }
 
-  /**
-   * Removal from the waiting list
-   */
-  const release: Release = (p = { key: "" }) => {
+  const release: Release = (options) => {
+    const request = list.get(`${options?.key}`)
+    if (request) {
+      if (request.r.length !== 0) request.r.shift()!(options)
+      request.l--
 
-    const list = REQS[p.key]
-    if (list.w.length > 0) {
-      list.w.shift()?.r(p);
-      list.l--;
-      GLOBAL_LIMIT--;
-    } else {
-      list.l = 0;
-      GLOBAL_LIMIT = 0
+      list.set(`${options?.key}`, request)
     }
 
+    usedLimit--
   }
 
-  return { wait, release }
-
+  return {
+    wait,
+    release,
+  }
 }
 
-export {
-  Mutex,
-  type TMutex,
-  type Reqs,
-  type Wait,
-  type Release
-}
+export { Mutex, type MutexOptions, type List, type Wait, type Release }
