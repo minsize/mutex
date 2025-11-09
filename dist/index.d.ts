@@ -28,6 +28,8 @@ type MutexOptions = {
 type Mutex = (options?: MutexOptions) => {
     wait: Wait;
     release: Release;
+    lock: () => void;
+    unlock: () => void;
 };
 declare const Mutex: Mutex;
 
